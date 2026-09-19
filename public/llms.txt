@@ -1,0 +1,27 @@
+# Animstudio - 2D & 3D Vector Animation Web App & Cartoon Maker
+
+> Animstudio is an advanced browser-based and mobile 2D/3D vector animation studio and character cartoon maker, functioning as an online alternative to Adobe Animate for web and Android. Features include bone rigging, inverse kinematics, frame-by-frame timeline, mesh deformer, 3D stroke memory, onion skinning, auto-tweening, and direct export to MP4, WebM, and GIF.
+
+## Overview & Key Capabilities
+- **Platform**: Web (HTML5/Canvas/WebGL), Progressive Web App (PWA), Trusted Web Activity (TWA), and Android Native APK
+- **Application Category**: 2D & 3D Animation Software, Vector Illustration, Cartoon Video Maker
+- **Android Package**: com.animstudio.app (SHA256 Fingerprint: 70:F0:73:3B:99:B8:B4:BD:F4:1F:4B:BD:81:D5:D0:4B:AF:AC:AB:F9:0A:72:9E:FA:D1:10:69:5F:6C:8D:A5:FC)
+- **Installability**: Installable as PWA across all modern browsers (Chrome, Edge, Brave, Safari, Samsung Internet) and direct Android APK download.
+- **Keywords**: Animstudio, animation app, adobe animate on web, adobe animate for android, adobe animate, Cartoon maker app, 2D animation app, kahani maker app, 3D animation app, new animation app, 2D animation app for android, 2D animation web app, frame by frame animation app, vector animation app like adobe animate for android, for web, frame by frame animation app on web, kahani banane wala app, adobe cartoon app, 2D cartoon video maker, 2D animation web app, animstudio apk, animstudio pwa.
+
+## Features
+- **Frame-by-Frame Vector Animation**: Full timeline with onion skinning, keyframing, auto-tweening, and auto frames.
+- **Bone Rigging & Inverse Kinematics (IK)**: Rig 2D characters with interactive skeletal hierarchies, joint rotation limits, and real-time IK posing.
+- **Mesh Deformer & Liquify**: Warp, squash, and stretch vector drawings with freeform lattice meshes.
+- **3D Stroke Memory**: Extrude 2D vector strokes into 3D objects with depth, rotation, and lighting memory.
+- **Drawing Substitution (Swap Studio)**: Swap hand gestures, mouth shapes, and eyes for lip-sync and expressive character animation.
+- **Kahani Maker & Cartoon Video Creator**: Ideal for creating animated stories, moral kahaniyaan, YouTube cartoon videos, and short films.
+- **High-Resolution Video Export**: Export 1080p/4K 60fps MP4, WebM, animated GIF, and project JSON archives.
+
+## Links
+- Website: /
+- Documentation: /llms-full.txt
+- Android APK Download: /AnimStudio.apk
+- Twitter / X: https://twitter.com/animstudio_app
+- YouTube: https://www.youtube.com/@animstudio_app
+- GitHub: https://github.com/chavankrushna660-hub/animstudio_7

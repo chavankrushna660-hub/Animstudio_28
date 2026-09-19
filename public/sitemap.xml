@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
+        xmlns:image="http://www.google.com/schemas/sitemap-image/1.1">
+  <url>
+    <loc>/</loc>
+    <lastmod>2026-09-19</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>1.0</priority>
+    <image:image>
+      <image:loc>/logo.png</image:loc>
+      <image:title>Animstudio Logo</image:title>
+      <image:caption>Animstudio Official 2D and 3D Vector Animation Studio Logo</image:caption>
+    </image:image>
+    <image:image>
+      <image:loc>/logo-1024x1024.png</image:loc>
+      <image:title>Animstudio High-Resolution Brand Icon</image:title>
+      <image:caption>Animstudio Master Vector Animation Studio Logo Mark</image:caption>
+    </image:image>
+    <image:image>
+      <image:loc>/logo.svg</image:loc>
+      <image:title>Animstudio Vector Logo SVG</image:title>
+    </image:image>
+    <image:image>
+      <image:loc>/favicon-512x512.png</image:loc>
+      <image:title>Animstudio Favicon 512x512</image:title>
+    </image:image>
+    <image:image>
+      <image:loc>/og-image.png</image:loc>
+      <image:title>Animstudio 2D Animation Web App Workspace</image:title>
+    </image:image>
+  </url>
+  <url>
+    <loc>/AnimStudio.apk</loc>
+    <lastmod>2026-09-19</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.9</priority>
+  </url>
+  <url>
+    <loc>/site.webmanifest</loc>
+    <lastmod>2026-09-19</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+</urlset>

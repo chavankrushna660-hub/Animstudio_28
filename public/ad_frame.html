@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <base target="_blank">
+  <style>
+    * { box-sizing: border-box; }
+    html, body {
+      margin: 0;
+      padding: 0;
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+      background: transparent;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+    }
+    #ad-container {
+      width: 100%;
+      height: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
+    }
+    iframe {
+      max-width: 100% !important;
+      max-height: 100% !important;
+      border: none !important;
+    }
+  </style>
+</head>
+<body>
+  <div id="ad-container"></div>
+  <script>
+    (function() {
+      try {
+        var params = new URLSearchParams(window.location.search);
+        var key = params.get('key');
+        var width = parseInt(params.get('w') || '468', 10);
+        var height = parseInt(params.get('h') || '60', 10);
+        var scriptUrl = params.get('script');
+        var containerId = params.get('container');
+        var container = document.getElementById('ad-container');
+
+        if (key) {
+          window.atOptions = {
+            'key': key,
+            'format': 'iframe',
+            'height': height,
+            'width': width,
+            'params': {}
+          };
+          var script = document.createElement('script');
+          script.type = 'text/javascript';
+          script.src = 'https://www.highperformanceformat.com/' + key + '/invoke.js';
+          document.body.appendChild(script);
+        } else if (scriptUrl) {
+          if (containerId) {
+            var c = document.createElement('div');
+            c.id = containerId;
+            c.style.width = '100%';
+            c.style.height = '100%';
+            container.appendChild(c);
+          }
+          var script = document.createElement('script');
+          script.type = 'text/javascript';
+          script.src = scriptUrl;
+          document.body.appendChild(script);
+        }
+      } catch (err) {
+        console.error('Ad loader error:', err);
+      }
+    })();
+  </script>
+</body>
+</html>

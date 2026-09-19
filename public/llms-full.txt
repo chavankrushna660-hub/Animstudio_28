@@ -1,0 +1,66 @@
+# Animstudio Complete Technical & Feature Specification
+
+## Introduction
+Animstudio is an all-in-one 2D & 3D vector animation web application, vector graphics editor, and character rigging studio designed to run seamlessly in the browser and as a lightweight Android app. Built as a modern, accessible alternative to Adobe Animate, Animstudio empowers animators, storytellers, illustrators, and students worldwide to create professional cartoon movies, moral stories (kahani banane wala app), explainer videos, and interactive animated content.
+
+## Primary Keywords & SEO Focus
+- Animstudio
+- animation app
+- adobe animate on web
+- adobe animate for android
+- adobe animate
+- Cartoon maker app
+- 2D animation app
+- kahani maker app
+- 3D animation app
+- new animation app
+- 2D animation app for android
+- 2D animation web app
+- frame by frame animation app
+- vector animation app like adobe animate for android
+- for web
+- frame by frame animation app on web
+- kahani banane wala app
+- adobe cartoon app
+- 2D cartoon video maker
+- 2D animation web app
+- कार्टून बनाने वाला ऐप
+- एनिमेशन बनाने वाला ऐप
+- कहानी बनाने वाला ऐप
+
+## Core Tools & Modules
+1. **Vector Drawing Engine**:
+   - Vector Pen Tool with cubic Bezier curves and corner smoothing.
+   - Pressure-sensitive Brush Tool with stabilization and tapering.
+   - Shape Tools (Rectangle, Ellipse, Polygon, Star, Line).
+   - Direct Selection and Point Editing.
+   - Real-time stroke width and color fill palette.
+
+2. **Timeline & Frame-by-Frame System**:
+   - Multi-layer timeline with independent layer locking, visibility, and opacity.
+   - Keyframe interpolation, inbetweening, and auto-tweening.
+   - Onion skinning with customizable forward and backward frame visibility and color tints.
+   - FPS adjustment (12fps, 24fps film, 30fps, 60fps smooth playback).
+
+3. **Skeletal Rigging & Inverse Kinematics (IK)**:
+   - Node-based hierarchical bone rigging system.
+   - Bind vector shapes and raster parts to skeletal bones.
+   - Pin constraints, angle limits, and interactive limb dragging.
+
+4. **3D Extrusion & Mesh Deformer**:
+   - 3D Stroke Memory: Extrude flat 2D artwork into 3D isometric perspectives.
+   - Liquify Lattice Deformer for organic squash & stretch animation principles.
+
+5. **Swap Studio (Drawing Substitution)**:
+   - Preset and custom library for mouth shapes, phonemes (lip sync), hand poses, and eye expressions.
+
+6. **Export & Sharing**:
+   - Direct WebCodecs / MediaRecorder MP4 & WebM export up to 4K resolution at 60fps.
+   - High-fidelity looping Animated GIF export.
+   - AnimStudio Project (.animstudio / JSON) import and export.
+   - Android Native APK installation.
+
+## Contact & Links
+- Main App: /
+- Organization: Animstudio
+- Support & Community: https://twitter.com/animstudio_app | https://www.youtube.com/@animstudio_app

@@ -1,0 +1,6 @@
+{
+  "name": "Animstudio",
+  "description": "Animstudio is a 2D vector animation app and character cartoon maker with bone rigging, frame-by-frame timeline, mesh deformer, and video export.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
