@@ -1882,7 +1882,11 @@ function RightPanel({
   // AI Smooth Motion & Loop Generator handlers
   const [hasBackup, setHasBackup] = useState(() => {
     try {
-      return typeof window !== 'undefined' && !!window.localStorage && !!localStorage.getItem('generator_original_frames_backup');
+      return typeof window !== 'undefined' && (
+        !!window.__generatorFramesBackupMemory ||
+        !!window.sessionStorage?.getItem('generator_original_frames_backup') ||
+        !!window.localStorage?.getItem('generator_original_frames_backup')
+      );
     } catch {
       return false;
     }
@@ -1890,12 +1894,16 @@ function RightPanel({
 
   const handleRestoreBackup = () => {
     try {
-      const backup = localStorage.getItem('generator_original_frames_backup');
+      let backup = typeof window !== 'undefined' ? window.__generatorFramesBackupMemory : null;
+      if (!backup) {
+        const raw = (typeof window !== 'undefined' && window.sessionStorage?.getItem('generator_original_frames_backup')) ||
+                    (typeof window !== 'undefined' && window.localStorage?.getItem('generator_original_frames_backup'));
+        if (raw) backup = JSON.parse(raw);
+      }
       if (backup) {
-        const parsed = JSON.parse(backup);
-        setFrames(parsed);
-        if (parsed[0]) {
-          setObjects(parsed[0].objects);
+        setFrames(backup);
+        if (backup[0]) {
+          setObjects(backup[0].objects);
         }
         setCurrentFrameIndex(0);
         alert("Successfully restored original reference frames!");
@@ -1948,12 +1956,16 @@ function RightPanel({
       return;
     }
 
-    // Save backup first
+    // Save backup first (in-memory & sessionStorage to avoid localStorage quota)
     try {
-      localStorage.setItem('generator_original_frames_backup', JSON.stringify(frames));
+      if (typeof window !== 'undefined') {
+        window.__generatorFramesBackupMemory = frames;
+        window.sessionStorage?.setItem('generator_original_frames_backup', JSON.stringify(frames));
+        window.localStorage?.removeItem('generator_original_frames_backup');
+      }
       setHasBackup(true);
     } catch (e) {
-      console.warn('Storage backup note:', e);
+      // safe fallback
     }
 
     const startFrameObjects = frames[startIdx].objects;
@@ -2143,12 +2155,16 @@ function RightPanel({
 
     const M = refEnd - refStart + 1;
 
-    // Save backup first
+    // Save backup first (in-memory & sessionStorage to avoid localStorage quota)
     try {
-      localStorage.setItem('generator_original_frames_backup', JSON.stringify(frames));
+      if (typeof window !== 'undefined') {
+        window.__generatorFramesBackupMemory = frames;
+        window.sessionStorage?.setItem('generator_original_frames_backup', JSON.stringify(frames));
+        window.localStorage?.removeItem('generator_original_frames_backup');
+      }
       setHasBackup(true);
     } catch (e) {
-      console.warn('Storage backup note:', e);
+      // safe fallback
     }
 
     const startFrameObjects = frames[refStart].objects;

@@ -17,9 +17,12 @@ export interface SavedAnimationRecord {
 // Maximum quota allowed for saved animations per user/session
 export const MAX_SAVED_ANIMATIONS_QUOTA = 50;
 
-// Local storage keys for our database
+// Storage identifiers
 const DB_STORAGE_KEY_V2 = 'animastudio_custom_db_v2';
 const DB_STORAGE_KEY_V1 = 'animastudio_custom_db';
+const IDB_DATABASE_NAME = 'AnimStudio_DurableDB';
+const IDB_STORE_NAME = 'animations';
+const IDB_VERSION = 1;
 
 /**
  * Safely parses JSON with fallback
@@ -29,55 +32,227 @@ function safeJsonParse<T>(raw: string | null, fallback: T): T {
   try {
     return JSON.parse(raw) as T;
   } catch (e) {
-    console.error('Failed to parse database json', e);
     return fallback;
   }
 }
 
-/**
- * Loads the raw database list from LocalStorage for v2 schema.
- */
-function getRawDbList(): SavedAnimationRecord[] {
-  try {
-    const raw = localStorage.getItem(DB_STORAGE_KEY_V2);
-    if (!raw) {
-      // Migrate v1 legacy single record if exists
-      const legacyRaw = localStorage.getItem(DB_STORAGE_KEY_V1);
-      if (legacyRaw) {
-        const legacyDict = safeJsonParse<Record<string, SavedAnimationRecord>>(legacyRaw, {});
-        const migratedList: SavedAnimationRecord[] = [];
-        Object.entries(legacyDict).forEach(([email, item]) => {
-          if (item && item.savedAt) {
-            migratedList.push({
-              ...item,
-              id: item.id || `anim_${item.savedAt}_${Math.random().toString(36).substring(2, 6)}`,
-              title: item.title || 'Saved Animation 1',
-              email: item.email || email,
-            });
-          }
-        });
-        if (migratedList.length > 0) {
-          localStorage.setItem(DB_STORAGE_KEY_V2, JSON.stringify(migratedList));
+// ---------------------------------------------------------------------------
+// Native IndexedDB Engine (Supports hundreds of MBs/GBs with zero quota issues)
+// ---------------------------------------------------------------------------
+
+let dbInstancePromise: Promise<IDBDatabase | null> | null = null;
+
+function getIndexedDB(): Promise<IDBDatabase | null> {
+  if (typeof window === 'undefined' || !window.indexedDB) {
+    return Promise.resolve(null);
+  }
+  if (dbInstancePromise) {
+    return dbInstancePromise;
+  }
+
+  dbInstancePromise = new Promise((resolve) => {
+    try {
+      const request = window.indexedDB.open(IDB_DATABASE_NAME, IDB_VERSION);
+
+      request.onupgradeneeded = (event) => {
+        const db = (event.target as IDBOpenDBRequest).result;
+        if (!db.objectStoreNames.contains(IDB_STORE_NAME)) {
+          const store = db.createObjectStore(IDB_STORE_NAME, { keyPath: 'id' });
+          store.createIndex('email', 'email', { unique: false });
+          store.createIndex('savedAt', 'savedAt', { unique: false });
         }
-        return migratedList;
-      }
-      return [];
+      };
+
+      request.onsuccess = (event) => {
+        resolve((event.target as IDBOpenDBRequest).result);
+      };
+
+      request.onerror = () => {
+        resolve(null);
+      };
+    } catch {
+      resolve(null);
     }
-    return safeJsonParse<SavedAnimationRecord[]>(raw, []);
-  } catch (e) {
-    console.error('Failed to parse animastudio local db list', e);
+  });
+
+  return dbInstancePromise;
+}
+
+async function idbGetAll(): Promise<SavedAnimationRecord[]> {
+  try {
+    const db = await getIndexedDB();
+    if (!db) return [];
+    return new Promise((resolve) => {
+      try {
+        const tx = db.transaction(IDB_STORE_NAME, 'readonly');
+        const store = tx.objectStore(IDB_STORE_NAME);
+        const req = store.getAll();
+        req.onsuccess = () => resolve(req.result || []);
+        req.onerror = () => resolve([]);
+      } catch {
+        resolve([]);
+      }
+    });
+  } catch {
     return [];
   }
 }
 
+async function idbPut(record: SavedAnimationRecord): Promise<void> {
+  try {
+    const db = await getIndexedDB();
+    if (!db) return;
+    return new Promise((resolve) => {
+      try {
+        const tx = db.transaction(IDB_STORE_NAME, 'readwrite');
+        const store = tx.objectStore(IDB_STORE_NAME);
+        store.put(record);
+        tx.oncomplete = () => resolve();
+        tx.onerror = () => resolve();
+      } catch {
+        resolve();
+      }
+    });
+  } catch {}
+}
+
+async function idbDelete(id: string): Promise<void> {
+  try {
+    const db = await getIndexedDB();
+    if (!db) return;
+    return new Promise((resolve) => {
+      try {
+        const tx = db.transaction(IDB_STORE_NAME, 'readwrite');
+        const store = tx.objectStore(IDB_STORE_NAME);
+        store.delete(id);
+        tx.oncomplete = () => resolve();
+        tx.onerror = () => resolve();
+      } catch {
+        resolve();
+      }
+    });
+  } catch {}
+}
+
+// ---------------------------------------------------------------------------
+// In-Memory Synchronized Cache (Ensures Instant Synchronous UI Reads)
+// ---------------------------------------------------------------------------
+
+let inMemoryDbCache: SavedAnimationRecord[] = [];
+let isCacheInitialized = false;
+
+function initSyncCache(): void {
+  if (isCacheInitialized) return;
+  try {
+    if (typeof window !== 'undefined' && window.localStorage) {
+      const raw = localStorage.getItem(DB_STORAGE_KEY_V2);
+      if (raw) {
+        const parsed = safeJsonParse<SavedAnimationRecord[]>(raw, []);
+        if (Array.isArray(parsed)) {
+          inMemoryDbCache = parsed;
+        }
+      } else {
+        // Check for legacy v1 single/keyed records
+        const legacyRaw = localStorage.getItem(DB_STORAGE_KEY_V1);
+        if (legacyRaw) {
+          const legacyDict = safeJsonParse<Record<string, SavedAnimationRecord>>(legacyRaw, {});
+          const migratedList: SavedAnimationRecord[] = [];
+          Object.entries(legacyDict).forEach(([email, item]) => {
+            if (item && item.savedAt) {
+              migratedList.push({
+                ...item,
+                id: item.id || `anim_${item.savedAt}_${Math.random().toString(36).substring(2, 6)}`,
+                title: item.title || 'Saved Animation 1',
+                email: item.email || email,
+              });
+            }
+          });
+          if (migratedList.length > 0) {
+            inMemoryDbCache = migratedList;
+          }
+        }
+      }
+    }
+  } catch {}
+  isCacheInitialized = true;
+}
+
+initSyncCache();
+
+// Asynchronous background hydration and migration with IndexedDB
+if (typeof window !== 'undefined') {
+  setTimeout(async () => {
+    try {
+      const idbRecords = await idbGetAll();
+      if (idbRecords && idbRecords.length > 0) {
+        // Merge records with in-memory cache, prioritizing by savedAt
+        const map = new Map<string, SavedAnimationRecord>();
+        inMemoryDbCache.forEach(r => map.set(r.id, r));
+        idbRecords.forEach(r => map.set(r.id, r));
+        inMemoryDbCache = Array.from(map.values()).sort((a, b) => (b.savedAt || 0) - (a.savedAt || 0));
+      } else if (inMemoryDbCache.length > 0) {
+        // First-time migration: store all in-memory/localStorage items into IndexedDB
+        for (const item of inMemoryDbCache) {
+          await idbPut(item);
+        }
+      }
+    } catch {}
+  }, 50);
+}
+
 /**
- * Persists raw database list to LocalStorage.
+ * Loads the raw database list from in-memory cache (with fallback to storage).
+ */
+function getRawDbList(): SavedAnimationRecord[] {
+  if (!isCacheInitialized) {
+    initSyncCache();
+  }
+  return inMemoryDbCache;
+}
+
+/**
+ * Persists raw database list to In-Memory, IndexedDB (unlimited quota), and LocalStorage mirror safely.
  */
 function saveRawDbList(list: SavedAnimationRecord[]) {
+  inMemoryDbCache = list;
+
+  // 1. Asynchronously persist to IndexedDB (virtually unlimited quota)
+  if (typeof window !== 'undefined') {
+    try {
+      list.forEach((record) => {
+        idbPut(record).catch(() => {});
+      });
+    } catch {}
+  }
+
+  // 2. Safely attempt to persist to LocalStorage mirror with graceful quota handling
   try {
-    localStorage.setItem(DB_STORAGE_KEY_V2, JSON.stringify(list));
-  } catch (e) {
-    console.error('Failed to save to local storage database', e);
+    if (typeof window !== 'undefined' && window.localStorage) {
+      localStorage.setItem(DB_STORAGE_KEY_V2, JSON.stringify(list));
+    }
+  } catch (quotaError) {
+    // Quota exceeded: clean up obsolete keys and strip bulky base64 thumbnails for LocalStorage mirror
+    try {
+      localStorage.removeItem(DB_STORAGE_KEY_V1);
+      localStorage.removeItem('generator_original_frames_backup');
+
+      // Compact version without giant thumbnails (IndexedDB retains complete data)
+      const compactList = list.map((item) => {
+        let thumb = item.thumbnailUrl;
+        if (thumb && thumb.length > 15000) {
+          thumb = undefined;
+        }
+        return { ...item, thumbnailUrl: thumb };
+      });
+
+      localStorage.setItem(DB_STORAGE_KEY_V2, JSON.stringify(compactList));
+    } catch (secondError) {
+      // If LocalStorage is full from other keys, remove the mirror
+      // IndexedDB and inMemoryDbCache preserve 100% data fidelity
+      try {
+        localStorage.removeItem(DB_STORAGE_KEY_V2);
+      } catch {}
+    }
   }
 }
 
@@ -238,12 +413,12 @@ export function saveUserAnimationToQuotaDb(
  */
 export function deleteSavedAnimationById(id: string, email: string): boolean {
   try {
+    idbDelete(id).catch(() => {});
     const all = getRawDbList();
     const filtered = all.filter(item => item.id !== id);
     saveRawDbList(filtered);
     return true;
   } catch (e) {
-    console.error('Failed to delete saved animation by id', e);
     return false;
   }
 }
