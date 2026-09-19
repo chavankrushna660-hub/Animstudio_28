@@ -871,7 +871,6 @@ export default function App() {
   });
   const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
   const [isSavedAnimationsModalOpen, setIsSavedAnimationsModalOpen] = useState(false);
-  const [isApkModalOpen, setIsApkModalOpen] = useState(false);
   const [savedRecord, setSavedRecord] = useState<SavedAnimationRecord | null>(null);
   const [authEmail, setAuthEmail] = useState('');
   const [authPassword, setAuthPassword] = useState('');
@@ -4208,20 +4207,6 @@ export default function App() {
 
           <div className="w-[2px] h-8 bg-neutral-800 mx-1 shrink-0"></div>
 
-          {/* Android APK Download Trigger */}
-          <button
-            onClick={() => setIsApkModalOpen(true)}
-            className="flex items-center gap-2 px-3.5 py-3 rounded-2xl bg-emerald-500/15 hover:bg-emerald-500/25 border-2 border-emerald-500/40 text-emerald-400 hover:text-emerald-300 font-black text-xs sm:text-sm transition-all cursor-pointer select-none shrink-0 shadow-md active:scale-95"
-            title="Download Real Android APK (AnimStudio.apk)"
-            id="btn-android-apk-modal"
-          >
-            <Smartphone className="w-5 h-5 stroke-[2.8] text-emerald-400 shrink-0" />
-            <span className="hidden sm:inline uppercase tracking-wider font-black">GET APK</span>
-            <span className="sm:hidden uppercase tracking-wider font-black">APK</span>
-            <span className="bg-emerald-500/20 text-emerald-300 text-[10px] px-1.5 py-0.5 rounded-md font-mono font-bold">877KB</span>
-          </button>
-
-          <div className="w-[1px] h-7 bg-neutral-800 mx-0.5 shrink-0"></div>
 
           {/* Database Storage Quota Trigger */}
           <button
@@ -4942,73 +4927,7 @@ export default function App() {
         />
       )}
 
-      {/* Real Android APK Download Modal */}
-      {isApkModalOpen && (
-        <div className="fixed inset-0 z-[10000] flex items-center justify-center bg-black/80 backdrop-blur-sm p-4 animate-in fade-in duration-200">
-          <div className="bg-neutral-900 border-2 border-neutral-700 rounded-3xl max-w-lg w-full p-6 text-neutral-100 shadow-2xl relative">
-            <button
-              onClick={() => setIsApkModalOpen(false)}
-              className="absolute top-4 right-4 p-2 rounded-xl text-neutral-400 hover:text-white hover:bg-neutral-800 transition-colors cursor-pointer"
-            >
-              <X className="w-5 h-5 stroke-[2.5]" />
-            </button>
 
-            <div className="flex items-center gap-3 mb-5">
-              <div className="w-12 h-12 rounded-2xl bg-emerald-500/20 border border-emerald-500/40 flex items-center justify-center shrink-0">
-                <Smartphone className="w-7 h-7 text-emerald-400 stroke-[2.5]" />
-              </div>
-              <div>
-                <h2 className="text-xl font-black uppercase tracking-wide text-white">AnimStudio Android APK</h2>
-                <p className="text-xs text-emerald-400 font-bold tracking-wider">OFFICIAL SIGNED RELEASE • v2.0.0</p>
-              </div>
-            </div>
-
-            <div className="space-y-3 mb-6">
-              <div className="p-3.5 rounded-2xl bg-neutral-800/80 border border-neutral-700/80 space-y-2 text-xs">
-                <div className="flex justify-between items-center py-1 border-b border-neutral-700/50">
-                  <span className="text-neutral-400">Package ID</span>
-                  <span className="font-mono font-bold text-neutral-200">com.animstudio.app</span>
-                </div>
-                <div className="flex justify-between items-center py-1 border-b border-neutral-700/50">
-                  <span className="text-neutral-400">Package Size</span>
-                  <span className="font-mono font-bold text-emerald-400">877 KB (Hyper-optimized)</span>
-                </div>
-                <div className="flex justify-between items-center py-1 border-b border-neutral-700/50">
-                  <span className="text-neutral-400">Compatibility</span>
-                  <span className="font-mono font-bold text-neutral-200">Android 5.0 to 15+ (All Devices)</span>
-                </div>
-                <div className="flex justify-between items-center py-1">
-                  <span className="text-neutral-400">Signatures</span>
-                  <span className="font-mono font-bold text-emerald-400">v1 + v2 + v3 Verified</span>
-                </div>
-              </div>
-
-              <div className="p-3.5 rounded-2xl bg-emerald-950/30 border border-emerald-500/20 text-xs text-neutral-300 space-y-1">
-                <p className="font-bold text-emerald-400 mb-1">Native Hardware & Offline Features:</p>
-                <p>• Zero cold-start delay with hardware GPU acceleration</p>
-                <p>• 100% offline standalone — create & edit animations without internet</p>
-                <p>• Direct export of animations to your Android device Gallery / Photos</p>
-                <p>• Native haptic vibration feedback and back-button protection</p>
-              </div>
-            </div>
-
-            <div className="flex flex-col gap-2.5">
-              <a
-                href="/AnimStudio.apk"
-                download="AnimStudio.apk"
-                className="flex items-center justify-center gap-2 w-full py-3.5 px-4 rounded-2xl bg-emerald-500 hover:bg-emerald-400 active:bg-emerald-600 text-neutral-950 font-black text-sm uppercase tracking-wider transition-all shadow-lg cursor-pointer"
-              >
-                <Download className="w-5 h-5 stroke-[3]" />
-                <span>Download AnimStudio.apk (877 KB)</span>
-              </a>
-
-              <p className="text-[11px] text-neutral-400 text-center">
-                Tap above to download directly. Open the APK on your Android device and choose Install.
-              </p>
-            </div>
-          </div>
-        </div>
-      )}
 
 
 
